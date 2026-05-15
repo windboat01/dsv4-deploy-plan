@@ -342,61 +342,146 @@ ftllm server deepseek-ai/DeepSeek-V4-Flash \
 <div class="card">
   <h2><span class="emoji">⚡</span>性能预期</h2>
 
-  <h3>带宽瓶颈推算</h3>
+  <h3>单发性能推算</h3>
   <table>
-    <tr><th>指标</th><th>数值</th><th>说明</th></tr>
-    <tr><td>每 token 数据搬运</td><td>13 GB</td><td>2 expert × 13B active × 0.5 byte (INT4)</td></tr>
-    <tr><td>DDR4 2400 16通道有效带宽</td><td><strong>~270 GB/s</strong></td><td>307.2 × 0.88（顺序流式效率）</td></tr>
-    <tr><td>每 token CPU 耗时</td><td>~48 ms</td><td>13 GB ÷ 270 GB/s</td></tr>
-    <tr><td>GPU Attention 耗时</td><td>~8 ms</td><td>3090 FP8 attention</td></tr>
-    <tr><td>其他开销</td><td>~7 ms</td><td>Router、残差连接、调度</td></tr>
-    <tr><td><strong>每 token 总耗时</strong></td><td><strong>~63 ms</strong></td><td>→ 约 15-16 tok/s 单发</td></tr>
+    <tr><th>指标</th><th>数值</th><th>计算过程</th></tr>
+    <tr><td>单颗 CPU 有效带宽</td><td><strong>~135 GB/s</strong></td><td>8ch × 19.2 GB/s × 0.88（顺序流式效率）</td></tr>
+    <tr><td>每 token 需搬运</td><td>13 GB</td><td>2 expert × 13B active × 0.5 byte (INT4)</td></tr>
+    <tr><td>CPU 专家加载耗时</td><td>~96 ms</td><td>13 GB ÷ 135 GB/s</td></tr>
+    <tr><td>GPU attention 耗时</td><td>~8 ms</td><td>3090 FP8 attention</td></tr>
+    <tr><td>其他固定开销</td><td>~7 ms</td><td>Router、残差连接、调度</td></tr>
+    <tr><td style="font-weight:700;color:var(--success)">每 token 总耗时</td><td style="font-weight:700;color:var(--success)"><strong>~111 ms</strong></td><td>96 + 8 + 7</td></tr>
+    <tr><td style="font-weight:700;color:var(--success)">→ 单发速度</td><td colspan="2" style="font-weight:700;color:var(--success)"><strong>~9 tok/s</strong>（1000 ÷ 111）</td></tr>
+  </table>
   </table>
 
-  <h3>多并发性能</h3>
-  
-  <div class="row">
-    <div class="col">
-      <div class="perf-bar-wrap">
-        <div class="perf-bar-label">1 人</div>
-        <div class="perf-bar-track"><div class="perf-bar-fill green" style="width:94%"></div></div>
-        <div class="perf-bar-val">~16 tok/s</div>
-      </div>
-      <div class="perf-bar-wrap">
-        <div class="perf-bar-label">2 人</div>
-        <div class="perf-bar-track"><div class="perf-bar-fill green" style="width:88%"></div></div>
-        <div class="perf-bar-val">各~15 tok/s</div>
-      </div>
-      <div class="perf-bar-wrap">
-        <div class="perf-bar-label">3 人</div>
-        <div class="perf-bar-track"><div class="perf-bar-fill yellow" style="width:60%"></div></div>
-        <div class="perf-bar-val">各~10 tok/s</div>
-      </div>
-      <div class="perf-bar-wrap">
-        <div class="perf-bar-label">4 人</div>
-        <div class="perf-bar-track"><div class="perf-bar-fill yellow" style="width:40%"></div></div>
-        <div class="perf-bar-val">各~7 tok/s</div>
-      </div>
-      <div class="perf-bar-wrap">
-        <div class="perf-bar-label">6+ 人</div>
-        <div class="perf-bar-track"><div class="perf-bar-fill red" style="width:25%"></div></div>
-        <div class="perf-bar-val">&lt;5 tok/s</div>
-      </div>
+  <h3>多并发性能推算</h3>
+
+  <h4>推演逻辑：单次推理的时间拆解</h4>
+  <p style="font-size:14px;margin-bottom:10px">整个架构中一次推理的瓶颈在 <strong>CPU 端的专家加载</strong>。GPU 端（~8ms）和非核心开销（~7ms）远小于 CPU 端，且多并发时 GPU 可以 batch 批处理，GPU 端延迟不随并发数等比增加。以下推算假设 GPU + 其他开销固定为 <strong>15ms</strong>。</p>
+
+  <!-- 1 user -->
+  <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:10px 0;border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong style="font-size:16px;color:var(--success)">🧑 单用户（1 并发）</strong>
+      <span style="font-size:14px;background:var(--success-light);padding:4px 12px;border-radius:4px">每人 ~16 tok/s ✅</span>
     </div>
-    <div class="col">
-      <div class="callout callout-success">
-        <strong>🏆 甜点：2 人同时使用</strong><br>
-        双路 NUMA 天然隔离——请求 A 走 CPU0，请求 B 走 CPU1，各用各的 8 通道内存带宽，<strong>互不竞争</strong>，每人体验等于单发。
-      </div>
-      <div class="callout callout-info">
-        <strong>4 人场景</strong><br>
-        每颗 CPU 上挂 2 个请求，带宽平分，每人 ~7 tok/s。日常问答、写代码仍可用，只是不会瞬间出完。
-      </div>
-      <div class="callout callout-warning">
-        <strong>长文本影响</strong><br>
-        512K 以内上下文对性能影响很小。如需 1M，启用 KV Cache INT4 压缩（~5 GB→仍在 24GB 内）。
-      </div>
+    <div style="margin-top:10px;font-size:14px;line-height:2">
+      <div>请求独占整颗 CPU0 的 <strong>8 通道带宽</strong>（~135 GB/s）</div>
+      <div>CPU 专家加载：13 GB ÷ 135 GB/s = <strong>~96 ms</strong></div>
+      <div>GPU + 其他：<strong>~15 ms</strong></div>
+      <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:600">每 token：96 + 15 = 111 ms → 1000/111 ≈ <strong style="color:var(--success)">9 tok/s</strong></div>
     </div>
+  </div>
+
+  <!-- 2 users -->
+  <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:10px 0;border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong style="font-size:16px;color:var(--success)">👥 2 用户并发</strong>
+      <span style="font-size:14px;background:var(--success-light);padding:4px 12px;border-radius:4px">各 ~9 tok/s ✅ 甜点</span>
+    </div>
+    <div style="margin-top:10px;font-size:14px;line-height:2">
+      <div>请求 A → CPU0（8 通道），请求 B → CPU1（8 通道）</div>
+      <div>两颗 CPU 使用各自的本地内存，<strong>带宽完全独立，无竞争</strong></div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU0 带宽 135 GB/s ÷ 请求 A（1 个）= 135 GB/s / req</div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU1 带宽 135 GB/s ÷ 请求 B（1 个）= 135 GB/s / req</div>
+      <div>每人 CPU 专家加载：13 ÷ 135 = <strong>~96 ms</strong></div>
+      <div>GPU batch size=2，attention 略有增加：<strong>~10 ms</strong></div>
+      <div>其他开销：<strong>~7 ms</strong></div>
+      <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:600">每 token：96 + 10 + 7 = 113 ms → 1000/113 ≈ <strong style="color:var(--success)">各 ~9 tok/s</strong></div>
+      <div style="font-size:13px;color:var(--text-light);margin-top:4px">系统总吞吐：~18 tok/s（带宽利用率接近双路上限 270 GB/s）</div>
+    </div>
+  </div>
+
+  <!-- 3 users -->
+  <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:10px 0;border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong style="font-size:16px;color:var(--warning)">👤👥 3 用户并发</strong>
+      <span style="font-size:14px;background:var(--warning-light);padding:4px 12px;border-radius:4px">各 ~6 tok/s</span>
+    </div>
+    <div style="margin-top:10px;font-size:14px;line-height:2">
+      <div>请求 A → CPU0，请求 B、C → CPU1（某 CPU 上挂 2 个请求）</div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU0 带宽 135 GB/s ÷ 1 个请求 = 135 GB/s / req → ~9 tok/s</div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU1 带宽 135 GB/s ÷ 2 个请求 = 67.5 GB/s / req</div>
+      <div>较慢的请求（CPU1 上）：13 GB ÷ 67.5 GB/s = <strong>~193 ms</strong></div>
+      <div>GPU + 其他（batch=3，约需 <strong>~13 ms</strong>）</div>
+      <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:600">每 token（拖后腿的那个）：193 + 13 + 7 = 213 ms → 1000/213 ≈ <strong style="color:var(--warning)">各 ~5 tok/s</strong></div>
+      <div style="font-size:13px;color:var(--text-light);margin-top:4px">系统总吞吐：~16 tok/s。两个快的请求会被慢的那个拖到同一速度（同步调度）。</div>
+    </div>
+  </div>
+
+  <!-- 4 users -->
+  <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:10px 0;border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong style="font-size:16px;color:var(--warning)">👥👥 4 用户并发</strong>
+      <span style="font-size:14px;background:var(--warning-light);padding:4px 12px;border-radius:4px">各 ~5 tok/s</span>
+    </div>
+    <div style="margin-top:10px;font-size:14px;line-height:2">
+      <div>每颗 CPU 上均分 2 个请求，带宽各被平分</div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU0 带宽 135 GB/s ÷ 2 个请求 = 67.5 GB/s / req</div>
+      <div style="margin-left:20px;font-size:13px;color:var(--text-light)">CPU1 带宽 135 GB/s ÷ 2 个请求 = 67.5 GB/s / req</div>
+      <div>每人 CPU 专家加载：13 ÷ 67.5 = <strong>~193 ms</strong></div>
+      <div>GPU batch=4，约需 <strong>~15 ms</strong></div>
+      <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px;font-weight:600">每 token：193 + 15 + 7 = 215 ms → 1000/215 ≈ <strong style="color:var(--warning)">各 ~5 tok/s</strong></div>
+      <div style="font-size:13px;color:var(--text-light);margin-top:4px">系统总吞吐：~19 tok/s（四路带宽用尽）</div>
+    </div>
+  </div>
+
+  <!-- Summary table -->
+  <h4 style="margin-top:24px">汇总</h4>
+  <table>
+    <tr><th>并发数</th><th>带宽分配</th><th>每 token 耗时</th><th>每人 tok/s</th><th>系统总吞吐</th><th>体验</th></tr>
+    <tr style="background:var(--success-light)">
+      <td><strong>1</strong></td>
+      <td>1 CPU × 135 GB/s</td>
+      <td>111 ms</td>
+      <td><strong>~9</strong></td>
+      <td>~9</td>
+      <td>✅ 快</td>
+    </tr>
+    <tr style="background:var(--success-light)">
+      <td><strong>2 🏆</strong></td>
+      <td>每 CPU 独享 135 GB/s</td>
+      <td>113 ms</td>
+      <td><strong>各 ~9</strong></td>
+      <td>~18</td>
+      <td>✅ 各不降速</td>
+    </tr>
+    <tr style="background:var(--warning-light)">
+      <td><strong>3</strong></td>
+      <td>某 CPU 被平分为 67.5 GB/s</td>
+      <td>213 ms</td>
+      <td><strong>各 ~5</strong></td>
+      <td>~16</td>
+      <td>⚠️ 可接受</td>
+    </tr>
+    <tr style="background:var(--warning-light)">
+      <td><strong>4</strong></td>
+      <td>每 CPU 各平分 67.5 GB/s</td>
+      <td>215 ms</td>
+      <td><strong>各 ~5</strong></td>
+      <td>~19</td>
+      <td>⚠️ 还可接受</td>
+    </tr>
+    <tr style="background:var(--danger-light)">
+      <td><strong>6+</strong></td>
+      <td>每 CPU 各被 3 分 &lt;45 GB/s</td>
+      <td>&gt;300 ms</td>
+      <td><strong>&lt;3</strong></td>
+      <td>~20+</td>
+      <td>❌ 变慢</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>🏆 关键结论：2 人同时使用是最佳工作点</strong><br>
+    双路 NUMA 天然隔离——请求 A 走 CPU0，请求 B 走 CPU1，各用各的 8 通道内存带宽，<strong>互不竞争</strong>，每人体验等于单发。这是双路架构相比单路最大的优势。
+  </div>
+  <div class="callout callout-info">
+    <strong>📐 公式说明</strong><br>
+    每 token 耗时 = (13 GB ÷ 可用带宽/请求) + 15 ms（GPU + 固定开销）<br>
+    可用带宽/请求 = 单颗 CPU 有效带宽(135 GB/s) ÷ 该 CPU 上的请求数<br>
+    每 tok/s = 1000 ÷ 每 token 耗时（ms）
   </div>
 </div>
 
