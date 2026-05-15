@@ -485,6 +485,94 @@ ftllm server deepseek-ai/DeepSeek-V4-Flash \
   </div>
 </div>
 
+<!-- Speed & Stability -->
+<div class="card">
+  <h2><span class="emoji">🔄</span>本地 9 tok/s vs API 调用：体验对比</h2>
+
+  <h3>一、速度：首字延迟 vs 生成速度</h3>
+  <table>
+    <tr><th>场景</th><th>API 官方（~60 tok/s）</th><th>本地（~9 tok/s）</th><th>实际感受</th></tr>
+    <tr>
+      <td>简短确认（“好”、“收到”）</td>
+      <td>1-2s 网络 + &lt;0.1s</td>
+      <td><strong>&lt;0.1s 瞬间出</strong></td>
+      <td>本地快得多 ✅</td>
+    </tr>
+    <tr>
+      <td>短回复（50 tok，如简短回答）</td>
+      <td>1-2s + 0.8s = <strong>~2s</strong></td>
+      <td>0.1s + 5.5s = <strong>~5.5s</strong></td>
+      <td>API 快</td>
+    </tr>
+    <tr>
+      <td>一段代码（200 tok）</td>
+      <td>1-2s + 3.3s = <strong>~5s</strong></td>
+      <td>0.1s + 22s = <strong>~22s</strong></td>
+      <td>API 快，本地要等一会</td>
+    </tr>
+    <tr>
+      <td>多轮对话（每轮 50-100 tok，6 轮）</td>
+      <td>6 轮 × 3s ≈ <strong>~18s</strong></td>
+      <td>6 轮 × 5.5s ≈ <strong>~33s</strong></td>
+      <td>本地多花 15s，但每轮少等网络</td>
+    </tr>
+    <tr>
+      <td>长回复（1000 tok，周报/报告）</td>
+      <td>1-2s + 17s = <strong>~19s</strong></td>
+      <td>0.1s + 111s = <strong>~1.8 分钟</strong></td>
+      <td>差距最大，但仍可阅读速度输出</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>关于首字延迟（TTFT）的一个关键洞察</strong><br>
+    API 每次请求固定 1-2s 网络往返。本地零网络，一问就出字。<br>
+    对于<strong>短轮次对话场景</strong>（问一句答一句），本地总耗时跟 API 的差距远小于 tok/s 数字上的差距——因为 API 的 1-2s 网络延迟占了大头。
+  </div>
+
+  <h3>二、稳定性：本地方案最大的优势</h3>
+  <table>
+    <tr><th style="width:30%"></th><th style="width:35%">API</th><th style="width:35%;background:var(--success-light)">本地 👍</th></tr>
+    <tr>
+      <td><strong>峰时排队</strong></td>
+      <td>你永远不知道会不会排队。高峰时首字延迟可能飙到 3-5s</td>
+      <td style="background:var(--success-light)">独占机器，资源完全可控，<strong>不存在排队</strong></td>
+    </tr>
+    <tr>
+      <td><strong>网络波动</strong></td>
+      <td>跨境链路（国内↔海外服务器）每天都有不可控的波动</td>
+      <td style="background:var(--success-light)"><strong>零网络依赖</strong>，时延恒定</td>
+    </tr>
+    <tr>
+      <td><strong>Token 速率</strong></td>
+      <td>付费计划决定速率；免费版有限流</td>
+      <td style="background:var(--success-light)">9 tok/s 稳定，不降速</td>
+    </tr>
+    <tr>
+      <td><strong>服务可用性</strong></td>
+      <td>今天用着 60 tok/s，明天高峰可能只剩 20 tok/s</td>
+      <td style="background:var(--success-light)">今天 9 tok/s，明天也是 9 tok/s，<strong>稳定可预测</strong></td>
+    </tr>
+    <tr>
+      <td><strong>精度一致性</strong></td>
+      <td>上游可能换模型版本，效果不可控</td>
+      <td style="background:var(--success-light)">模型文件固定，每次输出可复现</td>
+    </tr>
+    <tr>
+      <td><strong>多并发对等性</strong></td>
+      <td>多用户只是排队问题，相互影响</td>
+      <td style="background:var(--success-light)">2 人各 9 tok/s，互不影响</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>💡 核心结论</strong><br>
+    <strong>日常使用（对话、改 Bug、写代码）：</strong>本地体验跟 API 差别很小。首字秒出甚至比 API 快，内容以可阅读速度出现。不会因为“Service Unavailable”中断工作流。<br><br>
+    <strong>一次性超大生成（周报、翻译、长文档）：</strong>本地要等，不是秒出。但你可以先发请求，去倒杯水回来就完了。API 也得等同样时间，只是它的输出看起来快一些。<br><br>
+    <strong>最核心的是稳定性和可预测性：</strong>9 tok/s 今天是这样，明天也是这样。API 今天 60 tok/s，明天高峰可能只有 20 tok/s。而且 API 的 60 tok/s 快那几秒，对于公司长期使用的场景来说，真的值得每个月几万块的 API 费用吗？
+  </div>
+</div>
+
 <!-- Cost Analysis -->
 <div class="card">
   <h2><span class="emoji">💰</span>成本分析与回本周期</h2>
