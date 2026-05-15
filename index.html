@@ -571,6 +571,51 @@ ftllm server deepseek-ai/DeepSeek-V4-Flash \
     <strong>一次性超大生成（周报、翻译、长文档）：</strong>本地要等，不是秒出。但你可以先发请求，去倒杯水回来就完了。API 也得等同样时间，只是它的输出看起来快一些。<br><br>
     <strong>最核心的是稳定性和可预测性：</strong>9 tok/s 今天是这样，明天也是这样。API 今天 60 tok/s，明天高峰可能只有 20 tok/s。而且 API 的 60 tok/s 快那几秒，对于公司长期使用的场景来说，真的值得每个月几万块的 API 费用吗？
   </div>
+
+  <h3>三、OpenClaw Agent 场景：差异比纯聊天更小</h3>
+  <p style="font-size:14px">OpenClaw 是 Agent 框架——不是简单的问一句答一句，而是多步推理+工具调用。这个特性让本地和 API 的体验差距进一步缩小。</p>
+
+  <table>
+    <tr><th>Agent 特性</th><th>对 API 的影响</th><th>对本地方案的影响</th><th>结论</th></tr>
+    <tr>
+      <td><strong>每次输出很短</strong><br>Agent 的输出大多是结构化的工具调用（JSON），通常在 30-80 tok</td>
+      <td>1-2s 网络 + 0.5-1.3s 生成 ≈ <strong>~2.5s / 步</strong></td>
+      <td>0.1s + 3.3-8.8s 生成 ≈ <strong>~5s / 步</strong></td>
+      <td>每步只差 ~2.5s，差距缩小</td>
+    </tr>
+    <tr>
+      <td><strong>多步串联执行</strong><br>一个任务可能 3-8 步，每步依赖上一步结果</td>
+      <td>5 步任务：<strong>~12-15s 完成</strong><br>但每一步都要等网络返回</td>
+      <td>5 步任务：<strong>~25-30s 完成</strong><br>连续输出，无中断等待感</td>
+      <td>总时间差 ~15s，在 Agent 场景下可接受</td>
+    </tr>
+    <tr>
+      <td><strong>模型思考时间</strong><br>模型内部推理（COT）需要时间，这部分本地和 API 都要等</td>
+      <td>模型思考期间 API 也在生成<br>你不知道它在想还是卡了</td>
+      <td>本地模型思考时也能看到 token 在出<br>你能判断它“在工作”</td>
+      <td>本地更有掌控感</td>
+    </tr>
+    <tr>
+      <td><strong>API 超时/失败风险</strong></td>
+      <td>多步 Agent 中任何一步断掉都可能重来<br>网络抖动直接影响完成任务</td>
+      <td style="background:var(--success-light)"><strong>零网络依赖，不存在超时</strong><br>每一步都是本地完成</td>
+      <td>本地大幅胜出 ✅</td>
+    </tr>
+    <tr>
+      <td><strong>上下文累积</strong><br>Agent 每一步都会积累历史，上下文越长 KV Cache 越大</td>
+      <td>API 按 token 计费<br>长上下文直接烧钱</td>
+      <td style="background:var(--success-light)"><strong>不限量使用</strong><br>买断后不再有额外费用</td>
+      <td>本地经济性优势巨大 ✅</td>
+    </tr>
+  </table>
+
+  <div class="callout callout-success">
+    <strong>🤖 OpenClaw 场景的核心结论</strong><br>
+    Agent 是<strong>任务导向</strong>而不是<strong>速度导向</strong>的——你在意的是“任务能不能完成”，而不是“文字出得多快”。<br><br>
+    <strong>本地完成一个 5 步 Agent 任务大约 25-30s，API 大约 12-15s。</strong>两者都能接受，差距不像长文本生成看起来那么大。<br><br>
+    <strong>但本地在稳定性上完胜：</strong>API 调用 Agent 时，任何一步的网络波动都可能导致整个任务失败或重来。对于“自动发邮件”、“自动填报表”这种正式工作流，失败的代价远超那十几秒的速度优势。<br><br>
+    加上 <strong>OpenClaw 默认已经将 DeepSeek V4-Flash 设为首选模型</strong>，本地部署后只需改一下 base_url 就能无缝切换，迁移成本几乎为零。
+  </div>
 </div>
 
 <!-- Cost Analysis -->
