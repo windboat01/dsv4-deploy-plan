@@ -1,178 +1,234 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 900" font-family="Microsoft YaHei, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 930" font-family="Microsoft YaHei, sans-serif">
   <defs>
-    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#dc2626"/></marker>
     <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#2563eb"/></marker>
-    <marker id="arrow-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#059669"/></marker>
-    <marker id="arrow-gray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#6b7280"/></marker>
   </defs>
 
-  <!-- Background -->
-  <rect width="800" height="900" fill="#f8fafc" rx="8"/>
+  <rect width="800" height="930" fill="#f8fafc" rx="8"/>
+  <text x="400" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">追风者 PK620PC + Supermicro H11DSi — 布线图</text>
+  <text x="400" y="58" text-anchor="middle" font-size="13" fill="#64748b">
+    风道：底部 2×140mm 进风 → 经过 CPU/内存 → 顶部 2×140mm 排热 &nbsp;|&nbsp; 所有线束走机箱背线
+  </text>
 
-  <!-- Title -->
-  <text x="400" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">追风者 PK620PC — 机箱布线示意图</text>
-  <text x="400" y="58" text-anchor="middle" font-size="13" fill="#64748b">风道：下进上出 · 电源独立下仓 · 所有线束走背线</text>
+  <!-- Case outline -->
+  <rect x="40" y="75" width="720" height="810" rx="10" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+  <!-- PSU chamber divider -->
+  <line x1="40" y1="710" x2="760" y2="710" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,4"/>
 
-  <!-- ============ CASE OUTLINE ============ -->
-  <!-- Outer case -->
-  <rect x="50" y="75" width="700" height="780" rx="10" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+  <!-- ============ H11DSi BOARD (30.5×33.1cm scaled) ============ -->
+  <!-- Board outline: positioned at x=80,y=95, width=480 -->
+  <rect x="80" y="95" width="480" height="530" rx="6" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2" opacity="0.5"/>
+  <text x="320" y="115" text-anchor="middle" font-size="11" fill="#4338ca" font-weight="bold">H11DSi E-ATX 30.5×33.1cm</text>
 
-  <!-- Bottom chamber divider (PSU chamber) -->
-  <line x1="50" y1="710" x2="750" y2="710" stroke="#94a3b8" stroke-width="2" stroke-dasharray="8,4"/>
+  <!-- ============ REAR I/O (LEFT EDGE) ============ -->
+  <rect x="60" y="100" width="20" height="180" rx="2" fill="#94a3b8" stroke="#64748b" stroke-width="1"/>
+  <text x="70" y="205" text-anchor="middle" font-size="7" fill="white" transform="rotate(-90,70,205)">VGA · 2×USB2 · 2×USB3 · 2×LAN · IPMI · COM</text>
 
-  <!-- Motherboard tray area -->
-  <rect x="100" y="105" width="440" height="570" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>
+  <!-- ============ CPU0 (TOP) ============ -->
+  <rect x="210" y="140" width="100" height="100" rx="10" fill="#dcfce7" stroke="#059669" stroke-width="2"/>
+  <text x="260" y="195" text-anchor="middle" font-size="13" fill="#059669" font-weight="bold">CPU0</text>
+  <text x="260" y="212" text-anchor="middle" font-size="10" fill="#059669">EPYC 7302</text>
 
-  <!-- ============ MOTHERBOARD (H11DSi) ============ -->
-  <rect x="120" y="130" width="400" height="500" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5" opacity="0.7"/>
-  <text x="320" y="150" text-anchor="middle" font-size="11" fill="#2563eb" font-weight="bold">H11DSi E-ATX 主板</text>
+  <!-- 4U heatsink + NF-F12 for CPU0 -->
+  <rect x="315" y="140" width="120" height="100" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5"/>
+  <text x="375" y="195" text-anchor="middle" font-size="9" fill="#4b5563">4U 散热器</text>
+  <rect x="440" y="142" width="50" height="96" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
+  <text x="465" y="178" text-anchor="middle" font-size="8" fill="#475569">NF-F12</text>
+  <text x="465" y="192" text-anchor="middle" font-size="7" fill="#475569">扎带</text>
+  <text x="465" y="205" text-anchor="middle" font-size="7" fill="#475569">固定</text>
 
-  <!-- RAM slots (16 DIMMs - 8 left, 8 right) -->
-  <rect x="130" y="170" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="215" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="260" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="305" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="350" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="395" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="440" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <rect x="130" y="485" width="25" height="40" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
-  <text x="142" y="665" text-anchor="middle" font-size="10" fill="#d97706">16× DIMM</text>
-  <text x="142" y="680" text-anchor="middle" font-size="10" fill="#d97706">DDR4 2400</text>
+  <!-- ============ CPU0 DIMMs (4 LEFT + 4 RIGHT) ============ -->
+  <!-- DIMMs to the left of CPU0 -->
+  <rect x="130" y="145" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="180" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="215" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="250" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <text x="140" y="298" text-anchor="middle" font-size="7" fill="#d97706">CPU0</text>
+  <text x="140" y="308" text-anchor="middle" font-size="7" fill="#d97706">DIMM</text>
+  <text x="140" y="318" text-anchor="middle" font-size="7" fill="#d97706">A~D</text>
+  <!-- DIMMs to the right of CPU0 (between CPU and heatsink) -->
+  <rect x="185" y="145" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="180" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="215" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="250" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <text x="195" y="298" text-anchor="middle" font-size="7" fill="#d97706">CPU0</text>
+  <text x="195" y="308" text-anchor="middle" font-size="7" fill="#d97706">DIMM</text>
+  <text x="195" y="318" text-anchor="middle" font-size="7" fill="#d97706">E~H</text>
 
-  <!-- CPU sockets -->
-  <rect x="170" y="175" width="90" height="90" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="1.5"/>
-  <text x="215" y="225" text-anchor="middle" font-size="11" fill="#059669" font-weight="bold">CPU0</text>
-  <text x="215" y="240" text-anchor="middle" font-size="9" fill="#059669">7302</text>
+  <!-- ============ CPU1 (BOTTOM) ============ -->
+  <rect x="210" y="370" width="100" height="100" rx="10" fill="#dcfce7" stroke="#059669" stroke-width="2"/>
+  <text x="260" y="425" text-anchor="middle" font-size="13" fill="#059669" font-weight="bold">CPU1</text>
+  <text x="260" y="442" text-anchor="middle" font-size="10" fill="#059669">EPYC 7302</text>
 
-  <rect x="170" y="320" width="90" height="90" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="1.5"/>
-  <text x="215" y="370" text-anchor="middle" font-size="11" fill="#059669" font-weight="bold">CPU1</text>
-  <text x="215" y="385" text-anchor="middle" font-size="9" fill="#059669">7302</text>
+  <!-- 4U heatsink + NF-F12 for CPU1 -->
+  <rect x="315" y="370" width="120" height="100" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5"/>
+  <text x="375" y="425" text-anchor="middle" font-size="9" fill="#4b5563">4U 散热器</text>
+  <rect x="440" y="372" width="50" height="96" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
+  <text x="465" y="408" text-anchor="middle" font-size="8" fill="#475569">NF-F12</text>
+  <text x="465" y="422" text-anchor="middle" font-size="7" fill="#475569">扎带</text>
+  <text x="465" y="435" text-anchor="middle" font-size="7" fill="#475569">固定</text>
 
-  <!-- CPU 8-pin EPS connectors (top of board) -->
-  <rect x="230" y="118" width="40" height="14" rx="3" fill="#fee2e2" stroke="#dc2626" stroke-width="1"/>
-  <rect x="275" y="118" width="40" height="14" rx="3" fill="#fee2e2" stroke="#dc2626" stroke-width="1"/>
-  <text x="272" y="112" text-anchor="middle" font-size="9" fill="#dc2626">CPU 8-pin ×2</text>
+  <!-- ============ CPU1 DIMMs (4 LEFT + 4 RIGHT) ============ -->
+  <rect x="130" y="375" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="410" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="445" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="130" y="480" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <text x="140" y="528" text-anchor="middle" font-size="7" fill="#d97706">CPU1</text>
+  <text x="140" y="538" text-anchor="middle" font-size="7" fill="#d97706">DIMM</text>
+  <text x="140" y="548" text-anchor="middle" font-size="7" fill="#d97706">A~D</text>
+  <rect x="185" y="375" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="410" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="445" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <rect x="185" y="480" width="20" height="30" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="0.8"/>
+  <text x="195" y="528" text-anchor="middle" font-size="7" fill="#d97706">CPU1</text>
+  <text x="195" y="538" text-anchor="middle" font-size="7" fill="#d97706">DIMM</text>
+  <text x="195" y="548" text-anchor="middle" font-size="7" fill="#d97706">E~H</text>
 
-  <!-- 4U Heatsinks on CPUs -->
-  <rect x="260" y="170" width="120" height="100" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5"/>
-  <text x="320" y="225" text-anchor="middle" font-size="10" fill="#4b5563">4U 5管散热器</text>
-  <!-- NF-F12 fan (zip-tied) -->
-  <rect x="385" y="175" width="60" height="90" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
-  <text x="415" y="215" text-anchor="middle" font-size="8" fill="#475569">NF-F12</text>
-  <text x="415" y="228" text-anchor="middle" font-size="7" fill="#475569">扎带固定</text>
-  <!-- Arrow: airflow through heatsink -->
-  <line x1="450" y1="220" x2="470" y2="220" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <!-- ============ POWER CONNECTORS ============ -->
+  <!-- 24-pin ATX on RIGHT EDGE -->
+  <rect x="535" y="290" width="25" height="80" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="547" y="370" text-anchor="middle" font-size="7" fill="#dc2626" transform="rotate(-90,547,370)">24-pin (JPWR1)</text>
+  <!-- Arrow showing cable coming from PSU -->
+  <path d="M547,330 L620,330 Q670,330 670,380 L670,500 Q670,680 670,720" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrow-blue)"/>
+  <text x="690" y="530" font-size="9" fill="#dc2626">24-pin → 来自电源仓</text>
 
-  <rect x="260" y="315" width="120" height="100" rx="6" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1.5"/>
-  <text x="320" y="370" text-anchor="middle" font-size="10" fill="#4b5563">4U 5管散热器</text>
-  <rect x="385" y="320" width="60" height="90" rx="4" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
-  <text x="415" y="360" text-anchor="middle" font-size="8" fill="#475569">NF-F12</text>
-  <text x="415" y="373" text-anchor="middle" font-size="7" fill="#475569">扎带固定</text>
-  <line x1="450" y1="365" x2="470" y2="365" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <!-- EPS 8-pin (JPWR2/JPWR3) at TOP-RIGHT -->
+  <rect x="535" y="130" width="25" height="30" rx="4" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="548" y="130" text-anchor="middle" font-size="7" fill="#dc2626">JPWR2</text>
+  <text x="548" y="162" text-anchor="middle" font-size="7" fill="#dc2626">(CPU EPS 8-pin)</text>
+  <rect x="535" y="175" width="25" height="30" rx="4" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="548" y="178" text-anchor="middle" font-size="7" fill="#dc2626">JPWR3</text>
+  <text x="548" y="210" text-anchor="middle" font-size="7" fill="#dc2626">(CPU EPS 8-pin)</text>
+  <!-- Arrow from EPS to back of case -->
+  <path d="M560,145 Q600,145 620,160 Q680,180 700,300 L700,720" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <text x="720" y="380" font-size="9" fill="#2563eb">CPU 8-pin ×2</text>
+  <text x="720" y="395" font-size="9" fill="#2563eb">（走背线从左上</text>
+  <text x="720" y="410" font-size="9" fill="#2563eb"> 理线孔穿出）</text>
 
-  <!-- ============ RTX 3090 ============ -->
-  <rect x="180" y="540" width="200" height="80" rx="6" fill="#fae8ff" stroke="#a21caf" stroke-width="1.5"/>
-  <text x="280" y="575" text-anchor="middle" font-size="12" fill="#a21caf" font-weight="bold">RTX 3090 24GB</text>
-  <text x="280" y="592" text-anchor="middle" font-size="9" fill="#86198f">PCIe x16_1（靠近 CPU1）</text>
+  <!-- ============ PCIe SLOTS (BOTTOM EDGE) ============ -->
+  <!-- x16 slot for GPU -->
+  <rect x="120" y="555" width="180" height="12" rx="2" fill="#fae8ff" stroke="#a21caf" stroke-width="1.5"/>
+  <text x="210" y="580" text-anchor="middle" font-size="9" fill="#a21caf">x16 (GPU)</text>
+  <!-- x8 slots -->
+  <rect x="120" y="590" width="180" height="10" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="210" y="612" text-anchor="middle" font-size="8" fill="#6b7280">x8</text>
+  <rect x="120" y="620" width="180" height="10" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="210" y="642" text-anchor="middle" font-size="8" fill="#6b7280">x8</text>
+  <rect x="320" y="555" width="100" height="10" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="370" y="577" text-anchor="middle" font-size="8" fill="#6b7280">x8</text>
+  <rect x="320" y="590" width="100" height="10" rx="2" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="370" y="612" text-anchor="middle" font-size="8" fill="#6b7280">x8</text>
+
+  <!-- ============ RTX 3090 PLUGGED IN ============ -->
+  <rect x="110" y="505" width="220" height="50" rx="4" fill="#fae8ff" stroke="#a21caf" stroke-width="2"/>
+  <text x="220" y="528" text-anchor="middle" font-size="11" fill="#a21caf" font-weight="bold">RTX 3090 24GB</text>
+  <text x="220" y="543" text-anchor="middle" font-size="8" fill="#86198f">PCIe x16_1（CPU1 下方）</text>
   <!-- GPU power connector -->
-  <rect x="390" y="560" width="50" height="16" rx="3" fill="#fce7f3" stroke="#be185d" stroke-width="1"/>
-  <text x="415" y="558" text-anchor="middle" font-size="8" fill="#be185d">供电口</text>
+  <rect x="340" y="515" width="50" height="15" rx="3" fill="#fce7f3" stroke="#be185d" stroke-width="1"/>
+  <text x="365" y="525" text-anchor="middle" font-size="7" fill="#be185d">供电</text>
+  <!-- GPU power cable from PSU -->
+  <path d="M365,530 L365,570 Q365,600 400,600 Q450,600 480,620 L480,720" fill="none" stroke="#a21caf" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <text x="490" y="660" font-size="9" fill="#a21caf">PCIe / 12VHPWR</text>
+  <text x="490" y="675" font-size="9" fill="#a21caf">（来自电源仓）</text>
+
+  <!-- ============ FAN HEADERS ============ -->
+  <text x="560" y="450" font-size="9" fill="#059669" font-weight="bold">FAN 接针</text>
+  <text x="560" y="465" font-size="8" fill="#059669">FANA/FANB: CPU_FAN</text>
+  <text x="560" y="480" font-size="8" fill="#059669">FAN1~FAN6: 机箱风扇</text>
+
+  <!-- ============ SATA PORTS (RIGHT EDGE) ============ -->
+  <rect x="535" y="440" width="20" height="60" rx="2" fill="#e0f2fe" stroke="#0284c7" stroke-width="1"/>
+  <text x="545" y="490" text-anchor="middle" font-size="7" fill="#0284c7">SATA</text>
+  <text x="545" y="500" text-anchor="middle" font-size="7" fill="#0284c7">×10</text>
 
   <!-- ============ BOTTOM INTAKE FANS ============ -->
-  <rect x="120" y="720" width="120" height="25" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-  <text x="180" y="736" text-anchor="middle" font-size="10" fill="#1d4ed8">进风 P14 ×1</text>
-
-  <rect x="260" y="720" width="120" height="25" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-  <text x="320" y="736" text-anchor="middle" font-size="10" fill="#1d4ed8">进风 P14 ×2</text>
-
-  <!-- Airflow arrows: bottom → up -->
-  <line x1="180" y1="718" x2="180" y2="688" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
-  <line x1="320" y1="718" x2="320" y2="688" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <rect x="120" y="730" width="120" height="25" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="180" y="747" text-anchor="middle" font-size="11" fill="#1d4ed8">进风 140mm (底部)</text>
+  <rect x="260" y="730" width="120" height="25" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="320" y="747" text-anchor="middle" font-size="11" fill="#1d4ed8">进风 140mm (底部)</text>
+  <!-- Upward arrows -->
+  <line x1="180" y1="725" x2="180" y2="660" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+  <line x1="320" y1="725" x2="320" y2="660" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-blue)"/>
+  <text x="250" y="700" text-anchor="middle" font-size="10" fill="#2563eb">冷风 ↑</text>
 
   <!-- ============ TOP EXHAUST FANS ============ -->
-  <rect x="120" y="80" width="120" height="25" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
-  <text x="180" y="96" text-anchor="middle" font-size="10" fill="#b45309">出风 P14 ×1</text>
+  <rect x="120" y="80" width="120" height="22" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="180" y="95" text-anchor="middle" font-size="11" fill="#b45309">出风 140mm (顶部)</text>
+  <rect x="260" y="80" width="120" height="22" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="320" y="95" text-anchor="middle" font-size="11" fill="#b45309">出风 140mm (顶部)</text>
+  <line x1="180" y1="108" x2="180" y2="82" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="320" y1="108" x2="320" y2="82" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="250" y="72" text-anchor="middle" font-size="10" fill="#d97706">热风 ↑ 排出</text>
 
-  <rect x="260" y="80" width="120" height="25" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
-  <text x="320" y="96" text-anchor="middle" font-size="10" fill="#b45309">出风 P14 ×2</text>
+  <!-- ============ FAN CABLE ROUTING ============ -->
+  <!-- Bottom fans cable → CHA_FAN header at bottom edge of board -->
+  <path d="M440,745 L460,745 Q480,745 480,730 L480,710 Q480,680 460,660 L440,640 Q420,630 400,630" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="490" y="710" font-size="8" fill="#059669">风扇线→FAN1(FAN2)</text>
+  <!-- Top fans cable → CHA_FAN header at top edge -->
+  <path d="M440,92 L460,92 Q480,92 480,110 L480,130 Q480,150 460,170 L440,190" fill="none" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="490" y="150" font-size="8" fill="#059669">风扇线→FAN3(FAN4)</text>
 
-  <!-- Airflow arrows: inside → top out -->
-  <line x1="180" y1="102" x2="180" y2="80" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-gray)"/>
-  <line x1="320" y1="102" x2="320" y2="80" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-gray)"/>
+  <!-- ============ NF-F12 LINE TO CPU_FAN ============ -->
+  <path d="M490,168 L510,168 Q530,168 530,190 L530,220 Q530,250 540,250" fill="none" stroke="#059669" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="540" y="240" font-size="7" fill="#059669">NF-F12</text>
+  <text x="540" y="252" font-size="7" fill="#059669">→CPU_FAN</text>
 
   <!-- ============ POWER SUPPLY ============ -->
-  <rect x="480" y="730" width="150" height="70" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
-  <text x="555" y="762" text-anchor="middle" font-size="12" fill="#334155" font-weight="bold">长城 G11</text>
-  <text x="555" y="778" text-anchor="middle" font-size="9" fill="#64748b">1100W ATX3.0</text>
-  <!-- PSU fan -->
-  <rect x="485" y="735" width="40" height="60" rx="3" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="505" y="770" text-anchor="middle" font-size="12" fill="#94a3b8">⏺</text>
-
-  <!-- ============ CABLE ROUTING ============ -->
-
-  <!-- 24-pin motherboard cable -->
-  <path d="M530,770 L530,680 Q530,650 500,650 L480,650 Q460,650 460,630 L460,610 L460,590 L460,570 Q460,560 460,555 L460,545 L460,535" fill="none" stroke="#dc2626" stroke-width="3" marker-end="url(#arrow-red)"/>
-  <rect x="440" y="525" width="80" height="18" rx="3" fill="#fee2e2" stroke="#dc2626" stroke-width="1"/>
-  <text x="480" y="538" text-anchor="middle" font-size="9" fill="#dc2626">24-pin</text>
-
-  <!-- CPU 8-pin cable 1 -->
-  <path d="M500,770 L500,730 Q500,700 530,700 Q560,700 560,670 L560,640 Q560,620 540,620 L500,620 Q470,620 450,600 L400,580 Q380,570 370,560 L350,550 Q330,540 310,530 L290,520 Q270,510 265,500 L265,480 Q265,460 260,440 L260,420 Q260,400 258,380" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
-  <text x="470" y="620" font-size="9" fill="#2563eb">CPU 8-pin ×2</text>
-
-  <!-- GPU power cable -->
-  <path d="M520,770 L520,680 Q520,650 550,650 Q580,650 580,620 L580,590 Q580,570 550,570 L500,570 Q470,570 440,570" fill="none" stroke="#a21caf" stroke-width="2.5" marker-end="url(#arrow-gray)"/>
-  <text x="580" y="655" font-size="9" fill="#a21caf">PCIe / 12VHPWR</text>
-
-  <!-- Bottom fan cable routing -->
-  <path d="M360,720 L400,720 Q430,720 450,700 Q470,680 470,660 L470,640 Q470,620 440,610" fill="none" stroke="#059669" stroke-width="2" stroke-dasharray="5,3"/>
-  <text x="480" y="695" font-size="8" fill="#059669">风扇线→CHA_FAN</text>
+  <rect x="480" y="740" width="160" height="75" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+  <text x="560" y="775" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold">长城 G11 1100W</text>
+  <text x="560" y="793" text-anchor="middle" font-size="9" fill="#64748b">ATX3.0 · 独立下仓</text>
+  <!-- PSU fan outline -->
+  <rect x="485" y="745" width="35" height="65" rx="3" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
 
   <!-- ============ LEGEND ============ -->
-  <rect x="580" y="80" width="160" height="280" rx="8" fill="white" stroke="#cbd5e1" stroke-width="1"/>
-  <text x="660" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">图例</text>
+  <rect x="580" y="130" width="210" height="330" rx="8" fill="white" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="685" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e293b">图例</text>
 
-  <rect x="595" y="115" width="30" height="14" rx="3" fill="#dcfce7" stroke="#059669" stroke-width="1"/>
-  <text x="635" y="126" font-size="11" fill="#334155">CPU（EPYC 7302）</text>
+  <rect x="595" y="170" width="30" height="14" rx="3" fill="#dcfce7" stroke="#059669" stroke-width="1"/>
+  <text x="635" y="181" font-size="11" fill="#334155">CPU (EPYC 7302 ×2)</text>
 
-  <rect x="595" y="140" width="30" height="14" rx="3" fill="#fae8ff" stroke="#a21caf" stroke-width="1"/>
-  <text x="635" y="151" font-size="11" fill="#334155">GPU（RTX 3090）</text>
+  <rect x="595" y="195" width="30" height="14" rx="3" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
+  <text x="635" y="206" font-size="11" fill="#334155">DDR4 REG ECC (16×)</text>
 
-  <rect x="595" y="165" width="30" height="14" rx="3" fill="#fef3c7" stroke="#d97706" stroke-width="1"/>
-  <text x="635" y="176" font-size="11" fill="#334155">DDR4 内存（16×）</text>
+  <rect x="595" y="220" width="30" height="14" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+  <text x="635" y="231" font-size="11" fill="#334155">4U 5管服务器散热器</text>
 
-  <rect x="595" y="190" width="30" height="14" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
-  <text x="635" y="201" font-size="11" fill="#334155">4U 服务器散热器</text>
+  <rect x="595" y="245" width="30" height="14" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
+  <text x="635" y="256" font-size="11" fill="#334155">NF-F12（扎带固定于鳍片）</text>
 
-  <rect x="595" y="215" width="30" height="14" rx="3" fill="#cbd5e1" stroke="#64748b" stroke-width="1"/>
-  <text x="635" y="226" font-size="11" fill="#334155">NF-F12（扎带固定）</text>
+  <rect x="595" y="270" width="30" height="14" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>
+  <text x="635" y="281" font-size="11" fill="#334155">ARCTIC P14 140mm</text>
 
-  <rect x="595" y="240" width="30" height="14" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>
-  <text x="635" y="251" font-size="11" fill="#334155">进出风风扇 P14</text>
+  <rect x="595" y="295" width="30" height="14" rx="3" fill="#fae8ff" stroke="#a21caf" stroke-width="1"/>
+  <text x="635" y="306" font-size="11" fill="#334155">RTX 3090 24GB</text>
 
-  <rect x="595" y="265" width="30" height="14" rx="3" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
-  <text x="635" y="276" font-size="11" fill="#334155">长城 G11 电源</text>
+  <rect x="595" y="320" width="30" height="14" rx="3" fill="#f1f5f9" stroke="#64748b" stroke-width="1"/>
+  <text x="635" y="331" font-size="11" fill="#334155">长城 G11 1100W 电源</text>
 
-  <line x1="595" y1="296" x2="625" y2="296" stroke="#dc2626" stroke-width="3"/>
-  <text x="635" y="300" font-size="11" fill="#334155">24-pin 线缆</text>
+  <line x1="595" y1="348" x2="625" y2="348" stroke="#dc2626" stroke-width="3"/>
+  <text x="635" y="352" font-size="11" fill="#334155">24-pin 主板供电</text>
 
-  <line x1="595" y1="316" x2="625" y2="316" stroke="#2563eb" stroke-width="2.5"/>
-  <text x="635" y="320" font-size="11" fill="#334155">CPU 8-pin 线缆</text>
+  <line x1="595" y1="368" x2="625" y2="368" stroke="#2563eb" stroke-width="2.5"/>
+  <text x="635" y="372" font-size="11" fill="#334155">CPU 8-pin EPS</text>
 
-  <line x1="595" y1="336" x2="625" y2="336" stroke="#a21caf" stroke-width="2.5"/>
-  <text x="635" y="340" font-size="11" fill="#334155">GPU 供电线</text>
+  <line x1="595" y1="388" x2="625" y2="388" stroke="#a21caf" stroke-width="2.5"/>
+  <text x="635" y="392" font-size="11" fill="#334155">GPU 供电 (PCIe/12VHPWR)</text>
 
-  <line x1="595" y1="356" x2="625" y2="356" stroke="#059669" stroke-width="2" stroke-dasharray="5,3"/>
-  <text x="635" y="360" font-size="11" fill="#334155">PWM 风扇信号线</text>
+  <line x1="595" y1="408" x2="625" y2="408" stroke="#059669" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="635" y="412" font-size="11" fill="#334155">PWM 风扇线</text>
 
-  <!-- Airflow arrows in legend -->
-  <line x1="595" y1="376" x2="615" y2="376" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
-  <text x="635" y="380" font-size="11" fill="#334155">冷风进风 ↑</text>
+  <line x1="595" y1="428" x2="615" y2="428" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="635" y="432" font-size="11" fill="#334155">冷风 ↑</text>
 
-  <line x1="595" y1="396" x2="615" y2="396" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-gray)"/>
-  <text x="635" y="400" font-size="11" fill="#334155">热风出风 ↑</text>
+  <line x1="595" y1="448" x2="615" y2="448" stroke="#d97706" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="635" y="452" font-size="11" fill="#334155">热风 ↑</text>
 
-  <!-- ============ NOTES ============ -->
-  <rect x="70" y="815" width="660" height="30" rx="6" fill="#fffbeb" stroke="#fbbf24" stroke-width="1"/>
-  <text x="80" y="835" font-size="11" fill="#92400e">💡 注意事项：所有线束走机箱背面理线空间（PK620PC 背线空间 ~25mm）；底部风扇线沿机箱底部边缘走到 CHA_FAN；CPU 线从左上角理线孔穿出插到 EPS12V 接口</text>
+  <!-- ============ NOTES BOX ============ -->
+  <rect x="60" y="830" width="680" height="45" rx="6" fill="#fffbeb" stroke="#fbbf24" stroke-width="1"/>
+  <text x="75" y="850" font-size="11" fill="#92400e">
+    💡 所有线束走机箱背面（PK620PC 背线空间 ~25mm）；CPU 8-pin ×2 从左上角理线孔穿到 EPS12V；
+  </text>
+  <text x="75" y="867" font-size="11" fill="#92400e">
+     底部 P14 沿底部边缘走到 FAN1/FAN2；顶部 P14 沿顶部边缘走到 FAN3/FAN4；NF-F12 插 FANA/FANB（CPU_FAN）
+  </text>
 
 </svg>
