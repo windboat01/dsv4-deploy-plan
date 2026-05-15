@@ -260,32 +260,64 @@ ftllm server deepseek-ai/DeepSeek-V4-Flash \
     </tr>
     <tr>
       <td>6</td>
-      <td><strong>散热</strong></td>
-      <td>双塔风冷 (如利民 FC140 / 猫头鹰 D15)</td>
+      <td><strong>CPU 散热器</strong></td>
+      <td>附赠 4U 5热管服务器散热器（保留鳍片）</td>
       <td style="text-align:center">×2</td>
-      <td class="num">¥300</td>
-      <td class="num"><strong>¥600</strong></td>
+      <td class="num">¥0</td>
+      <td class="num"><strong>¥0</strong></td>
     </tr>
     <tr>
       <td>7</td>
-      <td><strong>电源</strong></td>
-      <td>1200W 80+ Gold ATX</td>
-      <td style="text-align:center">×1</td>
-      <td class="num">¥1,000</td>
-      <td class="num"><strong>¥1,000</strong></td>
+      <td><strong>CPU 风扇</strong></td>
+      <td>猫头鹰 NF-F12 PWM（替换服务器扇，扎带固定）</td>
+      <td style="text-align:center">×2</td>
+      <td class="num">¥180</td>
+      <td class="num"><strong>¥360</strong></td>
     </tr>
     <tr>
       <td>8</td>
-      <td><strong>机箱</strong></td>
-      <td>E-ATX 宽体 (如 Fractal Meshify 2 XL)</td>
+      <td><strong>机箱进风</strong></td>
+      <td>ARCTIC P14 PWM PST (140mm)</td>
+      <td style="text-align:center">×2</td>
+      <td class="num">¥60</td>
+      <td class="num"><strong>¥120</strong></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>机箱出风</strong></td>
+      <td>ARCTIC P14 PWM PST (140mm)</td>
+      <td style="text-align:center">×2</td>
+      <td class="num">¥60</td>
+      <td class="num"><strong>¥120</strong></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>电源</strong></td>
+      <td>长城猎金 G11 1100W ATX3.0 (GW-ATX1100BL)</td>
       <td style="text-align:center">×1</td>
-      <td class="num">¥400</td>
-      <td class="num"><strong>¥400</strong></td>
+      <td class="num">¥700</td>
+      <td class="num"><strong>¥700</strong></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><strong>机箱</strong></td>
+      <td>追风者 Phanteks PK620PC (E-ATX, 支持33.5cm主板上限)</td>
+      <td style="text-align:center">×1</td>
+      <td class="num">¥500</td>
+      <td class="num"><strong>¥500</strong></td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><strong>配件</strong></td>
+      <td>风扇一分二线 / 扎带</td>
+      <td style="text-align:center">×1</td>
+      <td class="num">¥20</td>
+      <td class="num"><strong>¥20</strong></td>
     </tr>
     <tr class="table-total">
       <td colspan="4"></td>
       <td class="num">总计</td>
-      <td class="num"><strong>¥17,120</strong></td>
+      <td class="num"><strong>¥16,940</strong></td>
     </tr>
   </table>
 
@@ -296,6 +328,10 @@ ftllm server deepseek-ai/DeepSeek-V4-Flash \
     <tr><td>为何 16×16GB 而非 8×32GB</td><td>16 根填满 16 通道，带宽翻倍；16GB 二手价远低于 32GB，同容量总价更低。</td></tr>
     <tr><td>为何 DDR4 2400 而非 3200</td><td>当前行情 16GB 3200 二手溢价过高（¥320 vs 难寻的 3200），2400 有效带宽 ~270 GB/s，足够支撑 15-18 tok/s。</td></tr>
     <tr><td>为何 RTX 3090 而非更贵的卡</td><td>稠密层 FP8 仅需 ~14-18 GB VRAM，3090 24GB 余量充足。1M 上下文时用 KV Cache INT4 压缩即可。</td></tr>
+    <tr><td>CPU 散热器怎么处理</td><td>保留附赠的 4U 5热管服务器散热器（鳍片可压 155W）。拆掉原配的 80mm 高转速风扇，用扎带固定两把猫头鹰 NF-F12 120mm 风扇，静音且散热足够。</td></tr>
+    <tr><td>机箱风扇怎么配</td><td>PK620PC 采用"下进上出"风道：底部 2×140mm 进风 → 经过 CPU/内存 → 顶部 2×140mm 出风。不用装前后风扇，社区验证对双路 EPYC 效果最佳。</td></tr>
+    <tr><td>电源选型的注意点</td><td>长城 G11 ATX3.0 带 2 根独立 CPU 4+4-pin 线，正好插满 H11DSi 的两个 EPS 12V 口。1100W 给双路 7302（310W）+ 3090（350W）余量充足。</td></tr>
+    <tr><td>机箱选型的注意点</td><td>H11DSi 是 33.1cm 宽 E-ATX，普通机箱装不下。PK620PC 支持到 33.5cm，已验证兼容。CPU 散热限高 18cm，4U 服务器散热器（~15cm）轻松放下。</td></tr>
     <tr><td>GPU 插在哪个 PCIe 槽</td><td>CPU1 最近的 PCIe 3.0 x16 槽。PCIe 利用率 <1%，插哪都可以。</td></tr>
   </table>
 </div>
