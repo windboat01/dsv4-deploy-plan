@@ -500,6 +500,24 @@ Ubuntu 22.04 LTS
 pip install ftllm -U</pre>
 </div>
 
+<!-- Wiring Diagram -->
+<div class="card">
+  <h2><span class="emoji">🔌</span>机箱布线图</h2>
+  <p style="font-size:14px;margin-bottom:12px">追风者 PK620PC · 下进上出风道 · 线束走背线</p>
+  <div style="text-align:center">
+    <img src="pk620pc-wiring.svg" alt="PK620PC 布线示意图" style="max-width:100%;border-radius:8px;border:1px solid var(--border)">
+  </div>
+  <div style="margin-top:12px;padding:12px 16px;background:var(--warning-light);border-radius:8px;font-size:13px;color:#92400e">
+    <strong>💡 走线要点</strong><br>
+    · 所有线束走机箱背面（PK620PC 背线空间 ~25mm）<br>
+    · CPU 8-pin ×2 从左上角理线孔穿出，插主板 EPS12V 口<br>
+    · 底部 P14 风扇线沿机箱底部边缘走到下方 CHA_FAN 口<br>
+    · 顶部 P14 风扇线沿机箱顶部走到上方 CHA_FAN 口<br>
+    · RTX 3090 供电线从电源仓穿过隔板开孔直插显卡<br>
+    · NF-F12 用扎带固定在 4U 散热器鳍片上，线插 CPU_FAN 口
+  </div>
+</div>
+
 <!-- Footer -->
 <div style="text-align:center;color:var(--text-light);font-size:13px;padding:20px 0">
   DeepSeek-V4-Flash × fastllm · 本地私有化部署方案 · 2026-05
