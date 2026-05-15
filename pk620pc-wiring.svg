@@ -6,7 +6,7 @@
   <rect width="800" height="930" fill="#f8fafc" rx="8"/>
   <text x="400" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">追风者 PK620PC + Supermicro H11DSi — 布线图</text>
   <text x="400" y="58" text-anchor="middle" font-size="13" fill="#64748b">
-    风道：底部 2×140mm 进风 → 经过 CPU/内存 → 顶部 2×140mm 排热 &nbsp;|&nbsp; 所有线束走机箱背线
+    风道：底部 2×140mm 进风 → 经过 CPU/内存 → 顶部 2×140mm 排热 · 所有线束走机箱背线
   </text>
 
   <!-- Case outline -->
