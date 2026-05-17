@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCR 源码完整分析 · chenxiaolong/BCR</title>
+<style>
+:root {
+  --bg: #1a1b26; --bg2: #24283b; --bg3: #1f2335;
+  --fg: #c0caf5; --fg2: #a9b1d6;
+  --accent: #7aa2f7; --accent2: #bb9af7;
+  --green: #9ece6a; --orange: #ff9e64; --red: #f7768e;
+  --cyan: #7dcfff; --yellow: #e0af68;
+  --code-bg: #1a1b26; --code-border: #3b4261; --hr: #3b4261; --link: #7dcfff;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Segoe UI", "Noto Sans SC", sans-serif;
+  background: var(--bg); color: var(--fg); line-height: 1.8; font-size: 15px;
+}
+.container { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+h1 { font-size: 2em; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.subtitle { color: var(--fg2); font-size: 0.9em; margin-bottom: 32px; }
+.subtitle a { color: var(--link); }
+h2 { font-size: 1.4em; font-weight: 600; color: var(--accent2); margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--hr); }
+h3 { font-size: 1.15em; font-weight: 600; color: var(--cyan); margin: 28px 0 12px; }
+h4 { font-size: 1em; font-weight: 600; color: var(--orange); margin: 20px 0 10px; }
+p { margin: 12px 0; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+ul, ol { margin: 8px 0; padding-left: 24px; }
+li { margin: 4px 0; }
+code { font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace; font-size: 0.9em; background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--orange); }
+pre { background: var(--code-bg); border: 1px solid var(--code-border); border-radius: 8px; padding: 16px; overflow-x: auto; font-size: 0.85em; line-height: 1.5; margin: 12px 0; }
+pre code { background: none; padding: 0; color: var(--fg); }
+blockquote { border-left: 3px solid var(--accent); background: var(--bg3); padding: 8px 16px; margin: 12px 0; border-radius: 0 6px 6px 0; color: var(--fg2); }
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9em; }
+th, td { border: 1px solid var(--code-border); padding: 8px 12px; text-align: left; }
+th { background: var(--bg2); color: var(--accent); font-weight: 600; }
+tr:nth-child(even) { background: var(--bg3); }
+hr { border: none; border-top: 1px solid var(--hr); margin: 32px 0; }
+.arch-box { background: var(--bg2); border: 1px solid var(--code-border); border-radius: 8px; padding: 16px; margin: 12px 0; font-family: "JetBrains Mono", monospace; font-size: 0.85em; line-height: 1.6; white-space: pre; overflow-x: auto; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 600; }
+.tag-green { background: #1a3a1a; color: var(--green); }
+.tag-orange { background: #3a2a1a; color: var(--orange); }
+.tag-red { background: #3a1a1a; color: var(--red); }
+.tag-blue { background: #1a2a3a; color: var(--accent); }
+.toc { background: var(--bg2); border: 1px solid var(--code-border); border-radius: 8px; padding: 16px 24px; margin: 24px 0; }
+.toc h3 { margin: 0 0 8px; color: var(--accent); }
+.toc ol.toc-list { margin: 0; padding-left: 20px; }
+.toc ol.toc-list > li { margin: 6px 0; }
+.toc a { color: var(--fg2); }
+.toc a:hover { color: var(--link); font-weight:500; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>BCR 源码完整分析</h1>
+<p class="subtitle">
+  仓库: <a href="https://github.com/chenxiaolong/BCR">github.com/chenxiaolong/BCR</a> · 作者: Andrew Gunnerson (chiller3) · 语言: Kotlin (97.8%) · 协议: GPL-3.0 · 分析基准: v2.11
+</p>
+
+<div class="toc">
+<h3>目录</h3>
+<ol class="toc-list">
+<li><a href="#arch">一、总体架构</a></li>
+<li><a href="#startup">二、应用启动流程</a></li>
+<li><a href="#lifecycle">三、通话生命周期管理</a></li>
+<li><a href="#capture">四、音频捕获引擎</a></li>
+<li><a href="#codec">五、编解码系统</a></li>
+<li><a href="#file">六、文件管理</a></li>
+<li><a href="#rules">七、规则引擎</a></li>
+<li><a href="#notifications">八、通知系统</a></li>
+<li><a href="#magisk">九、Magisk 模块</a></li>
+<li><a href="#permissions">十、权限体系</a></li>
+<li><a href="#callgraph">十一、完整函数调用图</a></li>
+<li><a href="#edge">十二、边缘情况处理</a></li>
+<li><a href="#insights">十三、对我们的关键启示</a></li>
+</ol>
+</div>
+
+<h2 id="arch">一、总体架构</h2>
+
+<h3>1.1 分层架构</h3>
+<div class="arch-box">
+┌─────────────────────────────────────────────────────────┐
+│                    Android System                        │
+├─────────────────────────────────────────────────────────┤
+│ Telecom Framework              Telephony Framework       │
+│ (InCallService.onCallAdded)   (TelecomManager)           │
+└─────────────────────┬───────────────────────────────────┘
+                      │ bind
+┌─────────────────────▼───────────────────────────────────┐
+│               Application Layer                          │
+│  RecorderApplication                                     │
+│  - Logcat.init()          - Crash 日志捕获               │
+│  - DynamicColors          - Material You 主题             │
+│  - Notifications.updateChannels()                        │
+│  - Preferences.migrate*() - 配置迁移                     │
+├──────────────────────────────────────────────────────────┤
+│               InCallService Layer                         │
+│  RecorderInCallService                                    │
+│  - onCallAdded()           - 入口点                      │
+│  - Call.Callback()         - 状态变化监听                │
+│  - startRecording()        - 创建 RecorderThread          │
+│  - requestStopRecording()  - 取消录音                    │
+│  - updateForegroundState() - 通知更新                     │
+├──────────────────────────────────────────────────────────┤
+│               Recording Thread Layer                      │
+│  RecorderThread                                           │
+│  - run()                   - 线程入口                    │
+│  - evaluateRules()         - 规则匹配                    │
+│  - recordUntilCancelled()  - 核心录音                    │
+│  - encodeLoop()            - 编码循环                    │
+├──────────────────────────────────────────────────────────┤
+│               Format / Codec Layer                        │
+│  Format (Opus/AAC/FLAC/WAV/AMR)                          │
+│  - Encoder: MediaCodecEncoder / PassthroughEncoder        │
+│  - Container: MediaMuxerContainer / WaveContainer         │
+├──────────────────────────────────────────────────────────┤
+│               Output / File Layer                         │
+│  OutputDirUtils, OutputFilenameGenerator                  │
+│  CallMetadataCollector, Retention                         │
+└──────────────────────────────────────────────────────────┘
+</div>
+
+<h2 id="startup">二、应用启动流程</h2>
+
+<pre><code>class RecorderApplication : Application() {
+    override fun onCreate() {
+        1. Logcat.init(this)           // 初始化日志系统
+        2. 设置未捕获异常处理器        // 崩溃保存到文件
+        3. DynamicColors.apply(...)    // Material You
+        4. Notifications.updateChannels()
+        5. Preferences 迁移:
+           - migrateTemplate()
+           - migrateAudioSource()
+           - migrateRecordRules()
+    }
+}</code></pre>
+
+<p>应用不需要用户主动打开。系统在以下情况自动绑定 <code>InCallService</code>：</p>
+<ul>
+  <li>用户拨出电话（DIALING 状态）</li>
+  <li>有来电（RINGING 状态）</li>
+</ul>
+
+<h2 id="lifecycle">三、通话生命周期管理</h2>
+
+<h3>3.1 核心类：RecorderInCallService</h3>
+<p>继承 <code>InCallService</code>，系统框架自动绑定。</p>
+
+<h4>Entry: onCallAdded(call: Call)</h4>
+<pre><code>onCallAdded(call)
+  - call.registerCallback(callback)
+  - handleStateChange(call, null)    // 处理当前状态（可能是 ACTIVE）</code></pre>
+
+<h4>Callback</h4>
+<pre><code>private val callback = object : Call.Callback() {
+    override fun onStateChanged(call, state)
+        handleStateChange(call, state)
+
+    override fun onDetailsChanged(call, details)
+        handleDetailsChange(call, details)
+        handleStateChange(call, null)  // 三星兼容
+
+    override fun onCallDestroyed(call)
+        requestStopRecording(call)
+}</code></pre>
+
+<h4>状态机</h4>
+<pre><code>handleStateChange(call, state):
+    STATE_ACTIVE     -> startRecording(call)
+    STATE_DIALING    -> if (prefs.recordDialingState) startRecording(call)
+    STATE_DISCONNECTED -> requestStopRecording(call)
+    STATE_HOLDING    -> callsToRecorders[call]?.isHolding = true</code></pre>
+
+<h4>startRecording()</h4>
+<pre><code>private fun startRecording(call: Call) {
+    // 前置检查：
+    // 1. prefs.isCallRecordingEnabled
+    // 2. Permissions.haveRequired()
+    // 3. callsToRecorders.containsKey(call) 防重入
+    // 4. callPackage 检查
+
+    val recorder = RecorderThread(this, this, call)
+    callsToRecorders[call] = recorder
+    notificationIdsToRecorders[id] = recorder
+    updateForegroundState()
+    recorder.start()
+}</code></pre>
+
+<h3>3.2 三星固件 Bug 兼容</h3>
+<blockquote>
+<p>三星固件的两个已知问题：</p>
+<ul>
+  <li><code>onCallRemoved()</code> 可能不被调用</li>
+  <li>通话断开的唯一通知渠道：<code>onDetailsChanged()</code> 中传递 DISCONNECTED 状态</li>
+</ul>
+<p>BCR 在 <code>onDetailsChanged()</code> 中额外调用 <code>handleStateChange()</code>，双重保险。</p>
+</blockquote>
+
+<h3>3.3 通知动作</h3>
+<pre><code>ACTION_PAUSE   -> recorder.isPaused = true
+ACTION_RESUME  -> recorder.isPaused = false
+ACTION_RESTORE -> recorder.keepRecording = KEEP
+ACTION_DELETE  -> recorder.keepRecording = DISCARD
+
+// 128 位随机 token 防伪造
+private val token = Random.nextBytes(128)</code></pre>
+
+<h2 id="capture">四、音频捕获引擎</h2>
+
+<h3>4.1 RecorderThread 构造函数</h3>
+<pre><code>init {
+    minDuration = prefs.minDuration
+    val savedFormat = Format.fromPreferences(prefs)
+    format = savedFormat.format
+    formatParam = savedFormat.param
+    sampleRate = savedFormat.sampleRate ?: format.sampleRateInfo.default
+    sources = savedFormat.audioSource.sources  // 创建几个 AudioRecord
+}</code></pre>
+
+<table>
+<tr><th>AudioSource</th><th>sources</th><th>说明</th></tr>
+<tr><td>VOICE_CALL</td><td>[VOICE_CALL]</td><td>1个 AudioRecord，双向</td></tr>
+<tr><td>VOICE_UPLINK_DOWNLINK</td><td>[UPLINK, DOWNLINK]</td><td>2个，立体声</td></tr>
+<tr><td>VOICE_UPLINK</td><td>[VOICE_UPLINK]</td><td>仅你的声音</td></tr>
+<tr><td>VOICE_DOWNLINK</td><td>[VOICE_DOWNLINK]</td><td>仅对方声音</td></tr>
+</table>
+
+<h3>4.2 run() 主循环</h3>
+<pre><code>run()
+  1. startLogcat()
+  2. evaluateRules()
+  3. if (isCancelled) -> return
+  4. createFileInDefaultDir()
+  5. recordUntilCancelled(pfd)    // 核心
+  6. Os.fsync()
+  7. FINALIZING: KEEP/DISCARD, moveToOutputDir()
+  8. processRetention()
+  9. stopLogcat()
+  10. onRecordingCompleted()</code></pre>
+
+<h3>4.3 recordUntilCancelled() — AudioRecord 初始化</h3>
+<pre><code>val minBufSize = AudioRecord.getMinBufferSize(SR, MONO, PCM16BIT)
+
+for (source in sources) {
+    val audioRecord = AudioRecord(
+        source, sampleRate, MONO, PCM16BIT,
+        minBufSize * 6,         // 6倍缓冲区！应对编码波峰
+    )
+}
+
+audioRecords.forEach { it.startRecording() }
+
+val encoder = format.getEncoder(
+    format.getMediaFormat(sources.size, sampleRate, formatParam),
+    format.getContainer(pfd.fileDescriptor)
+)
+encoder.start()
+encodeLoop(audioRecords, encoder, minBufSize)</code></pre>
+
+<h3>4.4 encodeLoop() — 核心编码循环</h3>
+<pre><code>while (!isCancelled || !buffersFlushed):
+
+    阶段1: AudioRecord.read(NON_BLOCKING)
+    阶段2: interleaveChannels() — 多源交错
+    阶段3: 纯静音检测（全零检查）
+    阶段4: encoder.encode(bufferOut) — 编码
+    阶段5: buffersIn.compact() + bufferOut.clear()
+    阶段6: 超限检测 bufferOverruns++
+    阶段7: 最短录音检查 DISCARD_TOO_SHORT -> KEEP
+    阶段8: 睡眠到"缓冲区半满"
+
+encoder.encode(bufferOut, true)  // endOfStream=true</code></pre>
+
+<p><strong>关键参数：</strong><code>AudioRecord.READ_NON_BLOCKING</code> — 三星通话结束后不会永久阻塞。BCR 在文档中明确标注这是处理三星设备的关键兼容性代码。</p>
+
+<h3>4.5 线程优先级</h3>
+<pre><code>AndroidProcess.setThreadPriority(
+    AndroidProcess.THREAD_PRIORITY_URGENT_AUDIO
+)</code></pre>
+
+<h2 id="codec">五、编解码系统</h2>
+
+<h3>5.1 格式一览</h3>
+<table>
+<tr><th>类</th><th>名称</th><th>容器</th><th>编码</th><th>直通</th><th>立体声</th><th>API</th></tr>
+<tr><td>OpusFormat</td><td>OGG/Opus</td><td>audio/ogg</td><td>audio/opus</td><td>x</td><td>v</td><td>10+</td></tr>
+<tr><td>AacFormat</td><td>AAC</td><td>audio/mp4</td><td>audio/mp4a-latm</td><td>x</td><td>v</td><td>全</td></tr>
+<tr><td>FlacFormat</td><td>FLAC</td><td>audio/flac</td><td>audio/flac</td><td>x</td><td>v</td><td>全</td></tr>
+<tr><td>WaveFormat</td><td>WAV</td><td>audio/wav</td><td>audio/raw</td><td>v</td><td>v</td><td>全</td></tr>
+<tr><td>AmrWbFormat</td><td>AMR-WB</td><td>audio/amr</td><td>audio/amr-wb</td><td>x</td><td>x</td><td>全</td></tr>
+<tr><td>AmrNbFormat</td><td>AMR-NB</td><td>audio/amr</td><td>audio/3gpp</td><td>x</td><td>x</td><td>全</td></tr>
+</table>
+
+<h2 id="file">六、文件管理</h2>
+
+<table>
+<tr><th>场景</th><th>路径</th><th>说明</th></tr>
+<tr><td>BFU（首次解锁前）</td><td>filesDir/in_progress/</td><td>录音中</td></tr>
+<tr><td>BFU 完成后</td><td>filesDir/completed/</td><td>等待迁移</td></tr>
+<tr><td>已解锁</td><td>getExternalFilesDir(null)</td><td>默认目录</td></tr>
+<tr><td>用户自选</td><td>SAF URI</td><td>用户选择的目录</td></tr>
+</table>
+
+<h2 id="rules">七、规则引擎</h2>
+
+<pre><code>data class RecordRule(
+    val callNumber: CallNumber,  // Any / Contact / ContactGroup / Unknown
+    val callType: CallType,      // ANY / INCOMING / OUTGOING / CONFERENCE
+    val simSlot: SimSlot,        // Any / Specific(slot)
+    val action: Action,          // Save / Discard / Ignore
+)</code></pre>
+
+<h2 id="notifications">八、通知系统</h2>
+
+<table>
+<tr><th>频道</th><th>用途</th></tr>
+<tr><td>ongoing</td><td>录音进行中（前台服务通知）</td></tr>
+<tr><td>persistent</td><td>录音完成后的持久通知</td></tr>
+</table>
+
+<h2 id="magisk">九、Magisk 模块</h2>
+
+<pre><code>app/magisk/
+  customize.sh              # 安装时删除 addon.d
+  boot_common.sh
+  post-fs-data.sh
+  service.sh
+
+生成的 ZIP:
+  system/etc/permissions/privapp-permissions-com.chiller3.bcr.xml
+    &lt;permission name="CAPTURE_AUDIO_OUTPUT"/&gt;
+    &lt;permission name="CONTROL_INCALL_EXPERIENCE"/&gt;
+  system/priv-app/BCR/BCR.apk</code></pre>
+
+<h2 id="permissions">十、权限体系</h2>
+
+<table>
+<tr><th>权限</th><th>级别</th><th>用途</th></tr>
+<tr><td>CAPTURE_AUDIO_OUTPUT</td><td>system/privileged</td><td>捕获通话音频</td></tr>
+<tr><td>CONTROL_INCALL_EXPERIENCE</td><td>system/privileged</td><td>InCallService 绑定</td></tr>
+<tr><td>BIND_INCALL_SERVICE</td><td>system</td><td>service 属性声明</td></tr>
+<tr><td>RECORD_AUDIO</td><td>dangerous</td><td>运行时检查</td></tr>
+</table>
+
+<pre><code>val REQUIRED = arrayOf(RECORD_AUDIO) + NOTIFICATION
+fun haveRequired(context): Boolean =
+    REQUIRED.all { checkSelfPermission(it) == GRANTED }</code></pre>
+
+<h2 id="callgraph">十一、完整函数调用图</h2>
+
+<div class="arch-box">
+系统: 来电/去电
+│
+RecorderInCallService
+├── onCreate()
+│   - notificationManager, prefs, notifications
+│
+onCallAdded(call)
+├── registerCallback(callback)
+└── handleStateChange(call, null)
+    │
+    STATE_ACTIVE -> startRecording(call)
+        - 前置检查: enabled / permissions / duplicate
+        - RecorderThread(context, this, call)
+        - recorder.start()
+    
+    STATE_DISCONNECTED -> requestStopRecording()
+        - recorder.cancel()  (isCancelled = true)
+
+RecorderThread.run()
+├── evaluateRules() -> RecordRule.evaluate()
+├── recordUntilCancelled(pfd)
+│   ├── AudioRecord x sources
+│   ├── format.getContainer()
+│   ├── format.getEncoder()
+│   ├── encodeLoop()
+│   │   - AudioRecord.read(NON_BLOCKING)
+│   │   - interleaveChannels()
+│   │   - 纯静音检测
+│   │   - encoder.encode(bufferOut)
+│   │     -> MediaCodecEncoder
+│   │        -> container.writeSamples()
+│   └── encoder.encode(EOF=true)
+├── FINALIZING: moveToOutputDir() / delete()
+├── processRetention()
+├── stopLogcat()
+└── onRecordingCompleted(file, status)
+</div>
+
+<h2 id="edge">十二、边缘情况处理</h2>
+
+<h3>12.1 三星通话结束不通知</h3>
+<blockquote>onCallRemoved() 不被调用。BCR 在 onDetailsChanged() 和 handleStateChange() 中双重检测 DISCONNECTED 状态。</blockquote>
+
+<h3>12.2 三星 AudioRecord 永久阻塞</h3>
+<blockquote>通话结束后 VOICE_CALL 不再产生数据。<br>
+<strong>关键：</strong>使用 <code>AudioRecord.READ_NON_BLOCKING</code> 避免永久挂起。</blockquote>
+
+<h3>12.3 系统只有一个 VOICE_CALL 流</h3>
+<blockquote>多个通话同时进行时，VOICE_CALL 包含所有通话的混合音频。</blockquote>
+
+<h3>12.4 编解码器波峰</h3>
+<blockquote>minBufSize * 6 的大缓冲区 + bufferOverruns 计数器。</blockquote>
+
+<h3>12.5 Direct Boot</h3>
+<blockquote>设备未解锁时输出到 filesDir/，解锁后自动迁移到用户目录。</blockquote>
+
+<h3>12.6 通知限速</h3>
+<blockquote>Android 限 10 次/秒。BCR 使用旧状态缓存，仅变化时更新。</blockquote>
+
+<h3>12.7 文件写入失败</h3>
+<blockquote>先写临时文件再 moveToOutputDir()，moveError 捕获并通知用户。</blockquote>
+
+<h3>12.8 纯静音丢弃</h3>
+<blockquote>编码循环中逐帧检查全零PCM，发现后抛 PureSilenceException 删除文件。</blockquote>
+
+<h3>12.9 Ignore 规则</h3>
+<blockquote>cancel() -> 线程直接退出，不创建任何文件。</blockquote>
+
+<h3>12.10 暂停/保持丢弃</h3>
+<blockquote>继续采集但不编码，帧计数增加但编码帧数不变。</blockquote>
+
+<h2 id="insights">十三、对我们的关键启示</h2>
+
+<h3>13.1 正确的通话捕获路径</h3>
+<blockquote><strong>InCallService + AudioRecord(VOICE_CALL) + CAPTURE_AUDIO_OUTPUT</strong> — 这是标准方案。不需要 root 额外 API、不需要 MODIFY_AUDIO_SETTINGS、不需要 su。</blockquote>
+
+<h3>13.2 READ_NON_BLOCKING 是必需的</h3>
+<pre><code>// 错误：阻塞读，三星通话结束后永久挂起
+audioRecord.read(buf, 0, buf.length)
+
+// 正确
+audioRecord.read(buf, 0, buf.length, READ_NON_BLOCKING)</code></pre>
+
+<h3>13.3 可以复用 BCR 的录音循环</h3>
+<p>在 encodeLoop 中增加一个并行流：通过 LocalSocket 将 PCM 数据发送到 ADB forward。不需要修改 BCR 的核心逻辑。</p>
+
+<h3>13.4 AndroidManifest 必须声明</h3>
+<blockquote>CAPTURE_AUDIO_OUTPUT 和 CONTROL_INCALL_EXPERIENCE 必须在 APK manifest 中声明。仅放在 privapp-permissions XML 中不够——今天踩了6小时坑的教训。</blockquote>
+
+<h3>13.5 Magisk 模块最小结构</h3>
+<pre><code>/system/priv-app/YourApp/YourApp.apk
+/system/etc/permissions/privapp-permissions-com.example.xml</code></pre>
+
+<hr>
+<p style="text-align:center;color:var(--fg2);font-size:0.85em;">
+BCR v2.11 源码分析 &middot; 2026-05-17<br>
+<a href="https://github.com/chenxiaolong/BCR">github.com/chenxiaolong/BCR</a> &middot; GPL-3.0
+</p>
+</div>
+</body>
+</html>
